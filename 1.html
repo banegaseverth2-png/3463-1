@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 适配手机端核心配置 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>高级计算器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        /* 页面整体样式 */
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 10px;
+        }
+
+        /* 计算器容器 - 手机端适配 */
+        .calculator {
+            width: 100%;
+            max-width: 420px;
+            background: #1e1e2e;
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 显示区域 */
+        .display {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #2d2d44;
+            border-radius: 20px;
+            color: white;
+            text-align: right;
+            word-break: break-all;
+        }
+
+        /* 输入/计算过程显示 */
+        .input {
+            font-size: 24px;
+            min-height: 36px;
+            color: #a9b3d4;
+            margin-bottom: 10px;
+        }
+
+        /* 结果显示 */
+        .result {
+            font-size: 48px;
+            font-weight: 600;
+            min-height: 60px;
+        }
+
+        /* 按钮网格布局 */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        /* 通用按钮样式 */
+        button {
+            height: 65px;
+            border-radius: 18px;
+            border: none;
+            font-size: 22px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* 功能按钮（清除、删除） */
+        .func-btn {
+            background: #6c5ce7;
+        }
+
+        /* 运算符号按钮 */
+        .op-btn {
+            background: #f5576c;
+            font-size: 20px;
+        }
+
+        /* 数字按钮 */
+        .num-btn {
+            background: #3b3b58;
+        }
+
+        /* 等号按钮 */
+        .equal-btn {
+            background: #00b894;
+            grid-column: span 2;
+        }
+
+        /* 零号按钮 */
+        .zero-btn {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <!-- 显示区域 -->
+        <div class="display">
+            <div id="input" class="input"></div>
+            <div id="result" class="result">0</div>
+        </div>
+
+        <!-- 按钮区域 -->
+        <div class="buttons">
+            <button class="func-btn" onclick="clearAll()">C</button>
+            <button class="func-btn" onclick="deleteChar()">⌫</button>
+            <button class="op-btn" onclick="appendSymbol('²')">x²</button>
+            <button class="op-btn" onclick="appendSymbol('³')">x³</button>
+            <button class="op-btn" onclick="appendSymbol('√')">√</button>
+
+            <button class="num-btn" onclick="appendNumber('7')">7</button>
+            <button class="num-btn" onclick="appendNumber('8')">8</button>
+            <button class="num-btn" onclick="appendNumber('9')">9</button>
+            <button class="op-btn" onclick="appendSymbol('/')">÷</button>
+            <button class="op-btn" onclick="appendSymbol('1/')">1/x</button>
+
+            <button class="num-btn" onclick="appendNumber('4')">4</button>
+            <button class="num-btn" onclick="appendNumber('5')">5</button>
+            <button class="num-btn" onclick="appendNumber('6')">6</button>
+            <button class="op-btn" onclick="appendSymbol('*')">×</button>
+            <button class="op-btn" onclick="appendSymbol('±')">±</button>
+
+            <button class="num-btn" onclick="appendNumber('1')">1</button>
+            <button class="num-btn" onclick="appendNumber('2')">2</button>
+            <button class="num-btn" onclick="appendNumber('3')">3</button>
+            <button class="op-btn" onclick="appendSymbol('-')">−</button>
+            <button class="op-btn" onclick="appendSymbol('+')">+</button>
+
+            <button class="num-btn zero-btn" onclick="appendNumber('0')">0</button>
+            <button class="num-btn" onclick="appendNumber('.')">.</button>
+            <button class="equal-btn" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        // 获取显示元素
+        const inputDisplay = document.getElementById('input');
+        const resultDisplay = document.getElementById('result');
+        let currentInput = '';
+        let result = '';
+
+        // 追加数字
+        function appendNumber(num) {
+            currentInput += num;
+            inputDisplay.textContent = currentInput;
+        }
+
+        // 追加符号
+        function appendSymbol(symbol) {
+            // 处理高级运算符号
+            switch(symbol) {
+                case '²':
+                    currentInput = `Math.pow(${currentInput}, 2)`;
+                    break;
+                case '³':
+                    currentInput = `Math.pow(${currentInput}, 3)`;
+                    break;
+                case '√':
+                    currentInput = `Math.sqrt(${currentInput})`;
+                    break;
+                case '1/':
+                    currentInput = `1/(${currentInput})`;
+                    break;
+                case '±':
+                    currentInput = `(-(${currentInput}))`;
+                    break;
+                case '*':
+                    currentInput += '*';
+                    break;
+                case '/':
+                    currentInput += '/';
+                    break;
+                default:
+                    currentInput += symbol;
+            }
+            inputDisplay.textContent = currentInput;
+        }
+
+        // 清空所有
+        function clearAll() {
+            currentInput = '';
+            result = '';
+            inputDisplay.textContent = '';
+            resultDisplay.textContent = '0';
+        }
+
+        // 删除最后一位
+        function deleteChar() {
+            currentInput = currentInput.slice(0, -1);
+            inputDisplay.textContent = currentInput;
+        }
+
+        // 计算结果
+        function calculate() {
+            try {
+                // 执行计算
+                result = eval(currentInput);
+                // 保留最多8位小数，避免精度问题
+                resultDisplay.textContent = Number.isInteger(result) ? result : result.toFixed(8).replace(/\.?0*$/, '');
+            } catch (error) {
+                resultDisplay.textContent = '错误';
+            }
+        }
+    </script>
+</body>
+</html>
